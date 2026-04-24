@@ -1,0 +1,12 @@
+{
+  "name": "ai-diagnosis-site",
+  "version": "1.0.0",
+  "description": "生成AI活用型 事前診断・集客・予約最適化システム",
+  "main": "index.js",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
