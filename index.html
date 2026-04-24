@@ -1218,11 +1218,10 @@ const CHALLENGES = [
     const lbl = document.createElement('label');
     lbl.className = 'diag-checkbox-label';
     lbl.innerHTML = `<input type="checkbox" value="${c}"><div class="diag-check-icon"></div>${c}`;
-    lbl.addEventListener('click', () => {
-      lbl.classList.toggle('checked');
-      const chk = lbl.querySelector('input');
-      chk.checked = !chk.checked;
-      lbl.querySelector('.diag-check-icon').textContent = chk.checked ? '✓' : '';
+    lbl.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isChecked = lbl.classList.toggle('checked');
+      lbl.querySelector('.diag-check-icon').textContent = isChecked ? '✓' : '';
     });
     grid.appendChild(lbl);
   });
