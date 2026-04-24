@@ -1,9 +1,9 @@
-const Anthropic = require('@anthropic-ai/sdk');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 const SYSTEM_PROMPT = `あなたは「生成AI活用型 事前診断・集客・予約最適化システム」の導入適合性を評価する専門アナリストです。
-顧客が入力した診断フォームの回答を分析し、以下のJSON形式のみで回答してください。それ以外のテキストは一切出力しないでください。
+顧客が入力した診断フォームの回答を分析し、以下のJSON形式のみで回答してください。それ以外のテキストは一切出力しないでください。マークダウンのコードブロックも不要です。
 
 {
   "score": <0-100の整数。導入適合スコア>,
@@ -41,7 +41,10 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { industry, size, area, challenges, monthly_inquiries, current_tools, goals, budget_timing } = req.body;
+    const {
+      industry, size, area, challenges,
+      monthly_inquiries, current_tools, goals, budget_timing
+    } = req.body;
 
     if (!industry || !challenges) {
       res.status(400).json({ error: '必須項目が不足しています' });
@@ -70,19 +73,17 @@ ${goals || '未回答'}
 ${budget_timing || '未回答'}
 `;
 
-    const message = await client.messages.create({
-      model: 'claude-opus-4-5',
-      max_tokens: 1024,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: userContent }]
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-flash-lite',
+      systemInstruction: SYSTEM_PROMPT,
     });
 
-    const raw = message.content[0].text.trim();
-    // Strip markdown code fences if present
-    const jsonStr = raw.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim();
-    const result = JSON.parse(jsonStr);
+    const result = await model.generateContent(userContent);
+    const raw = result.response.text().trim();
+    const jsonStr = raw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+    const parsed = JSON.parse(jsonStr);
 
-    res.status(200).json(result);
+    res.status(200).json(parsed);
   } catch (err) {
     console.error('Diagnose error:', err);
     res.status(500).json({ error: '診断処理中にエラーが発生しました', detail: err.message });
