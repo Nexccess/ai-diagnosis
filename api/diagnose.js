@@ -1,6 +1,6 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+const genAI = new GoogleGenerativeAI(process.env.Gemini_API_Key);
 
 const SYSTEM_PROMPT = `あなたは「生成AI活用型 事前診断・集客・予約最適化システム」の導入適合性を評価する専門アナリストです。
 顧客が入力した診断フォームの回答を分析し、以下のJSON形式のみで回答してください。それ以外のテキストは一切出力しないでください。マークダウンのコードブロックも不要です。
