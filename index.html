@@ -1162,8 +1162,12 @@ footer {
           <input class="diag-input" id="b-position" type="text" placeholder="代表取締役、営業部長 など">
         </div>
         <div class="diag-field">
-          <label class="diag-label">希望連絡日時</label>
-          <input class="diag-input" id="b-date" type="text" placeholder="例：平日午前、来週火曜15時 など">
+          <label class="diag-label">希望日 <span style="color:var(--crimson)">*</span></label>
+          <input class="diag-input" id="b-date" type="date">
+        </div>
+        <div class="diag-field">
+          <label class="diag-label">希望時間 <span style="color:var(--crimson)">*</span></label>
+          <select class="diag-input" id="b-time"><option value="">選択</option><option>09:00</option><option>10:00</option><option>11:00</option><option>13:00</option><option>14:00</option><option>15:00</option><option>16:00</option><option>17:00</option><option>18:00</option></select>
         </div>
       </div>
 
@@ -1423,19 +1427,20 @@ async function submitBooking() {
   const company = document.getElementById('b-company').value.trim();
   const name    = document.getElementById('b-name').value.trim();
   const email   = document.getElementById('b-email').value.trim();
-  if (!company || !name || !email) {
-    alert('会社名・お名前・メールアドレスは必須です');
-    return;
-  }
+  const date    = document.getElementById('b-date').value;
+  const time    = document.getElementById('b-time').value;
+  if (!company || !name || !email) { alert('会社名・お名前・メールアドレスは必須です'); return; }
+  if (!date || !time) { alert('希望日・希望時間を選択してください'); return; }
 
   const payload = {
     company, name, email,
-    phone:            document.getElementById('b-phone').value,
-    position:         document.getElementById('b-position').value,
-    preferred_date:   document.getElementById('b-date').value,
-    message:          document.getElementById('b-message').value,
-    diagnosis_score:  diagResult?.score,
-    diagnosis_grade:  diagResult?.grade,
+    phone:           document.getElementById('b-phone').value,
+    position:        document.getElementById('b-position').value,
+    preferred_date:  date,
+    preferred_time:  time,
+    message:         document.getElementById('b-message').value,
+    diagnosis_score: diagResult?.score,
+    diagnosis_grade: diagResult?.grade,
   };
 
   try {
@@ -1446,16 +1451,12 @@ async function submitBooking() {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || '送信エラー');
-
     document.getElementById('diag-booking').classList.remove('active');
     document.getElementById('diag-booking').style.display = 'none';
-
-    document.getElementById('success-booking-id').textContent =
-      `受付番号: ${data.booking_id}`;
+    document.getElementById('success-booking-id').textContent = `受付番号: ${data.booking_id}`;
     const succ = document.getElementById('diag-success');
     succ.classList.add('active');
     succ.style.display = 'flex';
-
   } catch (err) {
     alert('送信中にエラーが発生しました: ' + err.message);
   }
