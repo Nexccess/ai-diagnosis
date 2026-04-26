@@ -66,7 +66,7 @@ module.exports = async function handler(req, res) {
       attendees: [{ email: 'info.nexccess@gmail.com' }, { email }]
     };
     const calRes = await fetch(
-      'https://www.googleapis.com/calendar/v3/calendars/info.nexccess%40gmail.com/events?sendUpdates=all',
+      'https://www.googleapis.com/calendar/v3/calendars/info.nexccess@gmail.com/events?sendUpdates=all',
       {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
